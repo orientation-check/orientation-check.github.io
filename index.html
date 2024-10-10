@@ -1,21 +1,73 @@
 <!DOCTYPE html>
-<html><head>
-    <title>Hello, World!</title>
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-      <h1 class="title">Hello World! </h1>
-      <p id="currentTime"></p>
-      <script>window.addEventListener("deviceorientation", event => {
-  // Access raw gyro data:
-  let alpha = event.alpha; // Z-axis rotation
-  let beta = event.beta;   // X-axis rotation
-  let gamma = event.gamma; // Y-axis rotation
-});
-console.log(alpha, beta, gamma)</script>
-  <div>
-  <p>Alpha (Z-axis): <span id="alphaValue"></span></p>
-  <p>Beta (X-axis): <span id="betaValue"></span></p>
-  <p>Gamma (Y-axis): <span id="gammaValue"></span></p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Orientation Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #orientationData {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Device Orientation Check</h1>
+    <button id="permissionButton">Request Orientation Access</button>
+    <div id="orientationData">
+        <p>Alpha (Z-axis): <span id="alphaValue">N/A</span></p>
+        <p>Beta (X-axis): <span id="betaValue">N/A</span></p>
+        <p>Gamma (Y-axis): <span id="gammaValue">N/A</span></p>
     </div>
-</body></html>
+
+    <script>
+        const permissionButton = document.getElementById('permissionButton');
+        const alphaValue = document.getElementById('alphaValue');
+        const betaValue = document.getElementById('betaValue');
+        const gammaValue = document.getElementById('gammaValue');
+
+        function handleOrientation(event) {
+            if (event.alpha === null || event.beta === null || event.gamma === null) {
+                console.log("Orientation data not available");
+                return;
+            }
+
+            alphaValue.textContent = event.alpha.toFixed(2);
+            betaValue.textContent = event.beta.toFixed(2);
+            gammaValue.textContent = event.gamma.toFixed(2);
+        }
+
+        function requestOrientationPermission() {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                            permissionButton.style.display = 'none';
+                        } else {
+                            console.log('Permission denied');
+                            alert('Permission denied. Orientation data will not be available.');
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                // For non-iOS 13+ devices
+                window.addEventListener('deviceorientation', handleOrientation);
+                permissionButton.style.display = 'none';
+            }
+        }
+
+        if (window.DeviceOrientationEvent) {
+            permissionButton.addEventListener('click', requestOrientationPermission);
+        } else {
+            console.log("DeviceOrientation is not supported");
+            permissionButton.style.display = 'none';
+            alert('DeviceOrientation is not supported on this device or browser.');
+        }
+    </script>
+</body>
+</html>
