@@ -6,6 +6,16 @@
   <body>
       <h1 class="title">Hello World! </h1>
       <p id="currentTime"></p>
-      <script src="script.js"></script>
-  
+      <script>window.addEventListener("deviceorientation", event => {
+  // Access raw gyro data:
+  let alpha = event.alpha; // Z-axis rotation
+  let beta = event.beta;   // X-axis rotation
+  let gamma = event.gamma; // Y-axis rotation
+});
+console.log(alpha, beta, gamma)</script>
+  <div>
+  <p>Alpha (Z-axis): <span id="alphaValue"></span></p>
+  <p>Beta (X-axis): <span id="betaValue"></span></p>
+  <p>Gamma (Y-axis): <span id="gammaValue"></span></p>
+    </div>
 </body></html>
